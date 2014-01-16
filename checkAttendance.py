@@ -2,8 +2,8 @@
 """Tufts Computer Lab Attendance Checker.
 
 Usage:
-  ./checkAttendance.py [-l <lab>] [-d <date>] [--debug]
-  ./checkAttendance.py [-l <lab>] [-t <time>] [--debug]
+  ./checkAttendance.py [-l <lab>] [-d <date>] [--debug | --verbose]
+  ./checkAttendance.py [-l <lab>] [-t <time>] [--debug | --verbose]
 
 Options:
   -t <time>, --at=<time>    Check the attendance for the hour leading up to <time> (in zero padded 24 hour time).  [default: now]
@@ -11,6 +11,7 @@ Options:
   --debug                   Print debugging info.
   -h, --help                Show this screen.
   -l <lab>, --lab=<lab>     Which lab to check the attendance of?  [default: all]
+  -v, --verbose             Verbose output.
 """
 # TODO: add note about making sure to log into each machine and accept the host key
 # TODO: consider instead adding the ability to populate their known_hosts for them
@@ -64,6 +65,8 @@ def getLogins(machines, timeWindowContains):
 
 if __name__ == "__main__":
   arguments = docopt(__doc__, version="Attendance Checker v1.0")
+  if arguments["--verbose"]:
+    logging.basicConfig(level=logging.INFO)
   if arguments["--debug"]:
     logging.basicConfig(level=logging.DEBUG)
   machines = getMachineList(arguments["--lab"])
