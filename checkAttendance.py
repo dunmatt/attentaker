@@ -55,10 +55,13 @@ def getLogins(machines, timeWindowContains):
     return results
   for machine in machines:
     logging.info("Scanning %s" % machine)
-    raw_output = run(["ssh", machine, "last"])
-    for entry in process(raw_output):
-      if timeWindowContains(entry):
-        results.add(entry[0])
+    try:
+      raw_output = run(["ssh", machine, "last"])
+      for entry in process(raw_output):
+        if timeWindowContains(entry):
+          results.add(entry[0])
+    except:
+      logging.info("Couldn't reach %s" % machine)
   return results
 
 
