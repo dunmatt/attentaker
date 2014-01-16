@@ -49,7 +49,7 @@ def getLogins(machines, timeWindowContains):
     raw_output = run(["ssh", machine, "last"])
     for entry in process(raw_output):
       if timeWindowContains(entry):
-        results += entry[0]
+        results.add(entry[0])
   return results
 
 
@@ -64,10 +64,11 @@ if __name__ == "__main__":
 
   def inPreviousHour(query):
     d = timeArg - query[1]
-    return d >= timedelta(0) and d < timedelta(0, 3600)
+    return d >= timedelta() and d < timedelta(0, 3600)
 
   def onDay(query):
     return dateArg == query[1].date()
 
-  print getLogins(machines, onDay if dateArg else inPreviousHour)
+  for username in getLogins(machines, onDay if dateArg else inPreviousHour):
+    print username
 
