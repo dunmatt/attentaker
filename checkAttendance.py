@@ -33,6 +33,8 @@ def getMachineList(lab):
     return machines[lab]
   elif lab == "all":
     return machines["116"] + machines["118"] + machines["120"]
+  else:
+    print "Unknown lab, valid options are: all, %s" % ", ".join(sorted(machines.keys()))
 
 def stripTabs(str):
   return str.replace("\t", "")
@@ -45,6 +47,8 @@ def process(raw_output):
 
 def getLogins(machines, timeWindowContains):
   results = set()
+  if not machines:
+    return results
   for machine in machines:
     raw_output = run(["ssh", machine, "last"])
     for entry in process(raw_output):
