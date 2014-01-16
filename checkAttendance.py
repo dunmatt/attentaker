@@ -41,7 +41,7 @@ def stripTabs(str):
 
 def process(raw_output):
   for line in raw_output.split("\n"):
-    match = re.search("^(\w+)\W.+?\W([A-Z][a-z]{2}\s[A-Z][a-z]{2}[^:]+:\d\d)", line)
+    match = re.search("^(\w+)\W.+?:0.+?\W([A-Z][a-z]{2}\s[A-Z][a-z]{2}[^:]+:\d\d)", line)
     if match and "wtmp begins" not in line:
       print line
       yield (stripTabs(match.group(1)), datetime.strptime(stripTabs(str(date.today().year))+" "+match.group(2), "%Y %a %b %d %H:%M"))
