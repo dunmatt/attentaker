@@ -43,6 +43,7 @@ def process(raw_output):
   for line in raw_output.split("\n"):
     match = re.search("^(\w+)[^:.]+:0\S*([^:]+:\d\d)", line)
     if match:
+      print match.group(2)
       yield (stripTabs(match.group(1)), datetime.strptime(stripTabs(str(date.today().year))+" "+match.group(2), "%Y %a %b %d %H:%M"))
 
 def getLogins(machines, timeWindowContains):
