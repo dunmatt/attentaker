@@ -41,7 +41,7 @@ def stripTabs(str):
 
 def process(raw_output):
   for line in raw_output.split("\n"):
-    match = re.search("^(\w+)[^:.]+:0\S*([^:]+:\d\d)", line)
+    match = re.search("^(\w+)\W.+?(\w{3}\s\w{3}[^:]+:\d\d)", line)
     if match and "wtmp begins" not in line:
       print line
       yield (stripTabs(match.group(1)), datetime.strptime(stripTabs(str(date.today().year))+" "+match.group(2), "%Y %a %b %d %H:%M"))
@@ -77,4 +77,7 @@ if __name__ == "__main__":
 
   for username in getLogins(machines, onDay if dateArg else inPreviousHour):
     print username
+  # from dry_run_data import data
+  # for t in process(data):
+  #   print t
 
