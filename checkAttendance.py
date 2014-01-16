@@ -43,7 +43,7 @@ def process(raw_output):
   for line in raw_output.split("\n"):
     match = re.search("^(\w+)[^:.]+:0\S*([^:]+:\d\d)", line)
     if match:
-      print match.group(2)
+      print line
       yield (stripTabs(match.group(1)), datetime.strptime(stripTabs(str(date.today().year))+" "+match.group(2), "%Y %a %b %d %H:%M"))
 
 def getLogins(machines, timeWindowContains):
@@ -51,6 +51,7 @@ def getLogins(machines, timeWindowContains):
   if not machines:
     return results
   for machine in machines:
+    print "Scanning %s" % machine
     raw_output = run(["ssh", machine, "last"])
     for entry in process(raw_output):
       if timeWindowContains(entry):
