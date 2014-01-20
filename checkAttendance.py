@@ -44,10 +44,15 @@ def stripTabs(str):
 
 def process(raw_output):
   for line in raw_output.split("\n"):
-    match = re.search("^(\w+)\W.+?:0.+?\W([A-Z][a-z]{2}\s[A-Z][a-z]{2}[^:]+:\d\d)", line)
-    if match and "wtmp begins" not in line:
+    match = re.search("^(\w+)\W.+?:0.+?\W([A-Z][a-z]{2}\s[A-Z][a-z]{2}\s+\d\d?)\s(\d\d?:\d\d).{3}(still|\d\d?:\d\d)", line)
+    if match:# and "wtmp begins" not in line:
       logging.debug(line)
-      yield (stripTabs(match.group(1)), datetime.strptime(stripTabs(str(date.today().year))+" "+match.group(2), "%Y %a %b %d %H:%M"))
+      username = stripTabs(match.group(1))
+      loginTimeStr = "%s %s %s" % (date.today().year, match.group(2), match.group(3))
+      loginTime = datetime.strptime(loginTimeStr, "%Y %a %b %d %H:%M")
+      logoutTimeStr = "%s %s %s" % (date.today().year, match.group(2), match.group(4))
+      logoutTime = datetime.now() if "still" in match.group(4) else datetime.strptime(logoutTimeStr, "%Y %a %b %d %H:%M")
+      yield (username, loginTime, logoutTime)
 
 def getLogins(machines, timeWindowContains):
   results = set()
@@ -65,29 +70,26 @@ def getLogins(machines, timeWindowContains):
   return results
 
 
-
 if __name__ == "__main__":
   arguments = docopt(__doc__, version="Attendance Checker v1.0")
   if arguments["--verbose"]:
     logging.basicConfig(level=logging.INFO)
   if arguments["--debug"]:
     logging.basicConfig(level=logging.DEBUG)
-  machines = getMachineList(arguments["--lab"])
   now = datetime.now()
   # date parsing, recipe for pain, for details see the second half of http://www.youtube.com/watch?v=l3nPJ-yK-LU
   dateArg = datetime.strptime(arguments["--on"], "%Y-%m-%d").date() if "--on" in arguments and arguments["--on"] else None
   timeArg = now if arguments["--at"] == "now" else datetime.strptime(now.date().isoformat()+" "+arguments["--at"], "%Y-%m-%d %H:%M")
 
   def inPreviousHour(query):
-    d = timeArg - query[1]
-    return d >= timedelta() and d < timedelta(0, 3600)
+    return now - timedelta(0, 3600) <= query[2] and query[1] <= now
 
   def onDay(query):
     return dateArg == query[1].date()
 
+  machines = getMachineList(arguments["--lab"])
   for username in getLogins(machines, onDay if dateArg else inPreviousHour):
     print username
   # from dry_run_data import data
   # for t in process(data):
   #   print t
-
