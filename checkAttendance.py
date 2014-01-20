@@ -45,7 +45,7 @@ def stripTabs(str):
 def process(raw_output):
   for line in raw_output.split("\n"):
     match = re.search("^(\w+)\W.+?:0.+?\W([A-Z][a-z]{2}\s[A-Z][a-z]{2}\s+\d\d?)\s(\d\d?:\d\d).{3}(still|\d\d?:\d\d)", line)
-    if match:# and "wtmp begins" not in line:
+    if match:
       logging.debug(line)
       username = stripTabs(match.group(1))
       loginTimeStr = "%s %s %s" % (date.today().year, match.group(2), match.group(3))
@@ -71,7 +71,7 @@ def getLogins(machines, timeWindowContains):
 
 
 if __name__ == "__main__":
-  arguments = docopt(__doc__, version="Attendance Checker v1.0")
+  arguments = docopt(__doc__, version="Attendance Checker v1.1")
   if arguments["--verbose"]:
     logging.basicConfig(level=logging.INFO)
   if arguments["--debug"]:
